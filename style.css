@@ -101,12 +101,13 @@ nav .button-group button {
 }
 
 .person-hero-image img {
-    position: relative;
+    position: absolute;
+    top: 50px;
 }
 
 .square {
     position: absolute;
-    bottom: -12%;
+    top: 150px;
     left: 20%;
     width: 100%;
 }
@@ -165,4 +166,13 @@ h4 {
 .icons span img {
     width: 30px;
     margin-top: 1rem;
+}
+
+@media (min-width:1500px) {
+    .square {
+        position: absolute;
+        top: 250px;
+        left: 20%;
+        width: 100%;
+    }
 }
