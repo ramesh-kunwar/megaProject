@@ -28,11 +28,14 @@ exports.createCourse = async (req, res) => {
     }
 
     // check if it is instructor or not
+    // one way
     // const instructor = await User.findOne({ email, accountType: "Instructor" });
     const userId = req.user.id;
     const instructorDetails = await User.findById(userId, {
       accountType: "Instructor",
     });
+
+    // TODO: verify that userId and instructorDetails._id are the same or different
     if (!instructorDetails) {
       return res.status(400).json({
         success: false,
