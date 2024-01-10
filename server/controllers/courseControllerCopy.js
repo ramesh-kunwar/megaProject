@@ -67,6 +67,7 @@ exports.createCourse = async (req, res) => {
         message: "Category Details Not Found",
       });
     }
+
     // Upload the Thumbnail to Cloudinary
     //   const thumbnailImage = await uploadImageToCloudinary(
     //     thumbnail,

@@ -1,42 +1,59 @@
-const Categoey = require("../models/CategorySchema");
-
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
+const Category = require("../models/CategorySchema");
 
 exports.createCategory = async (req, res) => {
   try {
+    // fetch data from the request body
     const { name, description } = req.body;
+    // check if the fields are empty
     if (!name || !description) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
       });
     }
-    const categoryDetails = await Categoey.create({
+    // check if the category already exists
+    const existingCategory = await Category.findOne({ name });
+    if (existingCategory) {
+      return res.status(409).json({
+        success: false,
+        message: "Category already exists",
+      });
+    }
+
+    // create a new category
+
+    const category = await Category.create({
       name,
       description,
     });
 
+    // return the response
     return res.status(201).json({
       success: true,
-      messgae: "Category created successfully",
-      categoryDetails,
+      message: "Category created successfully",
+      data: category,
     });
   } catch (error) {
     return res.status(500).json({
-      success: true,
+      success: false,
       message: error.message,
     });
   }
 };
 
-exports.showAllCategories = async (req, res) => {
+exports.getAllCategories = async (req, res) => {
   try {
-    const allCategorys = await Category.find();
-    res.status(200).json({
+    // fetch all categories
+    const categories = await Category.find(
+      {},
+      { name: true, description: true }
+    );
+
+    // send response
+    return res.status(200).json({
       success: true,
-      data: allCategorys,
+      message: "Categories fetched successfully",
+      data: categories,
     });
   } catch (error) {
     return res.status(500).json({
