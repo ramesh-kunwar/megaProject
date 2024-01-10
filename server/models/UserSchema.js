@@ -33,6 +33,8 @@ const userSchema = new mongoose.Schema({
     ref: "Profile",
   },
 
+  // if user -> show to course bought by user
+  // if instructor -> show to course created by instructor
   courses: [
     {
       type: mongoose.Schema.Types.ObjectId,
