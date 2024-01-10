@@ -5,52 +5,46 @@ const { uploadImageToCloudinary } = require("../utils/ImageUploder");
 // create subSection
 exports.createSubSection = async (req, res) => {
   try {
-    // fetch data from req body;
+    // fetch data from req body
     const { sectionId, title, timeDuration, description } = req.body;
+
     // extract file/video
     const video = req.files.videoFile;
 
     // validation
-
     if (!sectionId || !title || !timeDuration || !description || !video) {
       return res.status(400).json({
         success: false,
         msg: "All fields are required",
       });
     }
-    // upload video to cloudinary
 
-    const uploadDetails = await uploadImageToCloudinary(
-      video,
-      process.env.FOLDER_NAME
-    );
+    // upload file/video to cloudinary
+    const videoUrl = await uploadImageToCloudinary(video);
 
-    // create a subSection
-    const subSectionDetails = await SubSection.create({
+    // create subSection
+    const subSection = await SubSection.create({
       title,
       timeDuration,
       description,
-      videoUrl: uploadDetails.secure_url,
+      videoUrl: videoUrl.secure_url,
     });
 
-    // update section with this subSection objectId
+    // update section with subSection
+
     const updatedSection = await Section.findByIdAndUpdate(
       { _id: sectionId },
-      {
-        $push: {
-          subSectioin: subSectionDetails._id,
-        },
-      },
+      { $push: { subSections: subSection._id } },
       { new: true }
     );
 
-    // TODO: log updated section here, after adding populate query
-    // return res
+    // TODO: log update section here,after adding populate query
 
-    return res.status(201).json({
-      success: false,
-      msg: "Sub Section creation successful",
-      updatedSection,
+    // send response
+    return res.status(200).json({
+      success: true,
+      msg: "Sub Section created successfully",
+      data: subSection,
     });
   } catch (error) {
     return res.status(500).json({
@@ -63,4 +57,4 @@ exports.createSubSection = async (req, res) => {
 
 // TODO: update subsection
 
-// TDOO: delete subsection
+// TODO: delete subsection
