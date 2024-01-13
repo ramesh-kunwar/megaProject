@@ -62,3 +62,56 @@ exports.getAllCategories = async (req, res) => {
     });
   }
 };
+
+// category page details
+exports.categoryPageDetails = async (req, res) => {
+  try {
+    // get the category id
+    const { categoryId } = req.body;
+
+    // fetch all the courses in that category
+    const selectedCategory = await Category.findById(categoryId)
+      .populate("course")
+      .exec();
+
+    // validation
+    if (!selectedCategory) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    // get courses for different categories
+    const differentCategories = await Category.find(
+      { _id: { $ne: categoryId } } // $ne means not equal to
+    )
+      .populate("course")
+      .exec();
+
+    // get top selling courses
+    const topSellingCourses = await Course.find({})
+      .sort({
+        sales: -1,
+      })
+      .limit(3)
+      .exec();
+
+    // return the response
+
+    return res.status(200).json({
+      success: true,
+      message: "Category page details fetched successfully",
+      data: {
+        selectedCategory,
+        differentCategories,
+        topSellingCourses,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
