@@ -147,3 +147,43 @@ exports.showAllCourses = async (req, res) => {
     });
   }
 };
+
+// get course details
+
+exports.showCourseDetails = async (req, res) => {
+  try {
+    const { courseId } = req.body;
+    // fetch course details
+    const courseDetails = await Course.findById(courseId)
+      .populate({ path: "instructor", pouplate: { path: "additionalDetails" } })
+      .populate("category")
+      .populate("ratingAndReviews")
+      .populate({
+        path: "courseContent",
+        populate: {
+          path: "subSection",
+        },
+      })
+      .exec();
+
+    // validation
+    if (!courseDetails) {
+      return res.status(400).json({
+        success: false,
+        message: "Course details not found with the id",
+      });
+    }
+
+    // return success response
+    return res.status(200).json({
+      success: true,
+      message: "Course details fetched successfully",
+      data: courseDetails,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
